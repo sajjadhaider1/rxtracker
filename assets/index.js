@@ -29,6 +29,7 @@
 })();
 const REPO = "sajjadhaider1/rxtracker";
 const FILE_PATH = "data.json";
+const BRANCH = "gh-pages";
 const API_URL = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
 function getToken() {
   return localStorage.getItem("rxtracker_pat") || "";
@@ -40,7 +41,7 @@ let appData = null;
 let fileSha = null;
 let saving = false;
 async function fetchData() {
-  const res = await fetch(API_URL, {
+  const res = await fetch(`${API_URL}?ref=${BRANCH}`, {
     headers: {
       Authorization: `token ${getToken()}`,
       Accept: "application/vnd.github.v3+json"
@@ -72,7 +73,8 @@ async function saveData(data) {
     body: JSON.stringify({
       message: `Update inventory ${today}`,
       content,
-      sha: fileSha
+      sha: fileSha,
+      branch: BRANCH
     })
   });
   if (!res.ok) {
