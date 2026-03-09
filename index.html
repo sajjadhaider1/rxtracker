@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RxTracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="/rxtracker/assets/index-DVhx8mAs.js"></script>
+    <link rel="stylesheet" crossorigin href="/rxtracker/assets/index-pWmlhZsQ.css">
+  </head>
+  <body class="bg-stone-50 min-h-screen font-sans text-stone-800">
+    <!-- Loading overlay -->
+    <div
+      id="loading-overlay"
+      class="fixed inset-0 bg-stone-50 z-50 flex items-center justify-center"
+    >
+      <div class="text-center">
+        <div class="inline-block w-6 h-6 border-2 border-teal-700 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <p class="font-mono text-sm text-stone-400 tracking-widest uppercase">Loading…</p>
+      </div>
+    </div>
+
+    <div id="app" class="max-w-5xl mx-auto px-3 py-4 sm:px-6 sm:py-8 opacity-0 transition-opacity duration-500">
+      <!-- Header -->
+      <header class="mb-3 sm:mb-6">
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl sm:text-4xl font-bold tracking-tight text-stone-900" style="font-family: 'Instrument Sans', sans-serif;">
+            Rx<span class="text-teal-700">Tracker</span>
+          </h1>
+          <button
+            id="btn-add"
+            class="inline-flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-xs font-mono font-medium uppercase tracking-wider px-3 py-2 sm:px-4 rounded transition-colors cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <span class="hidden sm:inline">Add Medicine</span>
+            <span class="sm:hidden">Add</span>
+          </button>
+        </div>
+        <div class="flex items-center gap-4 font-mono text-[10px] sm:text-xs tracking-wider text-stone-400 uppercase mt-1">
+          <span><strong id="date-display" class="text-stone-500">—</strong></span>
+          <span id="days-to-stock-wrap" class="cursor-pointer">
+            <span id="days-to-stock-show"><strong id="days-to-stock-display" class="text-stone-500">—</strong>-day window</span>
+            <span id="days-to-stock-edit" class="hidden items-center gap-1">
+              <input type="number" id="days-to-stock-input" min="1" step="1" inputmode="numeric" class="w-12 px-1.5 py-0.5 border border-stone-300 rounded text-xs font-mono text-stone-800 focus:outline-none focus:ring-1 focus:ring-teal-500 normal-case" />
+              <button id="days-to-stock-confirm" class="p-0.5 rounded text-teal-600 active:bg-teal-100 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </button>
+            </span>
+          </span>
+        </div>
+        <div class="h-px bg-gradient-to-r from-teal-700 via-teal-400 to-transparent mt-2"></div>
+      </header>
+
+      <!-- Medicine table -->
+      <div class="bg-white border border-stone-200 rounded-lg overflow-hidden">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-stone-50 text-left font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-stone-400">
+              <th class="px-3 sm:px-5 py-2 sm:py-3 font-medium">Medicine</th>
+              <th class="px-3 sm:px-5 py-2 sm:py-3 font-medium text-right hidden sm:table-cell">Daily</th>
+              <th class="px-3 sm:px-5 py-2 sm:py-3 font-medium text-right">Stock</th>
+              <th class="px-3 sm:px-5 py-2 sm:py-3 font-medium text-right">Order</th>
+              <th class="px-3 sm:px-5 py-2 sm:py-3 font-medium text-right w-0"></th>
+            </tr>
+          </thead>
+          <tbody id="medicine-table-body">
+            <!-- Rows rendered by JS -->
+          </tbody>
+        </table>
+
+        <div id="empty-state" class="hidden px-4 py-12 text-center">
+          <p class="font-mono text-sm text-stone-400">No medicines tracked yet.</p>
+          <p class="text-xs text-stone-300 mt-1">Tap "Add" to get started.</p>
+        </div>
+      </div>
+
+      <!-- Add/Edit Modal -->
+      <div
+        id="modal-backdrop"
+        class="fixed inset-0 bg-black/40 z-40 hidden items-end sm:items-center justify-center backdrop-blur-sm"
+      >
+        <div class="bg-white rounded-t-2xl sm:rounded-xl shadow-2xl w-full sm:max-w-md sm:mx-4 overflow-hidden">
+          <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+            <h3 id="modal-title" class="font-semibold text-stone-800 text-lg">Add Medicine</h3>
+            <button id="btn-cancel" type="button" class="p-1 text-stone-400 hover:text-stone-600 cursor-pointer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <form id="medicine-form" class="px-5 py-4 space-y-4">
+            <input type="hidden" id="form-id" />
+            <div>
+              <label
+                for="form-name"
+                class="block font-mono text-[11px] tracking-widest uppercase text-stone-400 mb-1.5"
+              >
+                Medicine Name
+              </label>
+              <input
+                type="text"
+                id="form-name"
+                required
+                class="w-full px-3 py-3 border border-stone-200 rounded-lg text-base text-stone-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent placeholder:text-stone-300"
+                placeholder="e.g. Amoxicillin 500mg"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="form-daily"
+                  class="block font-mono text-[11px] tracking-widest uppercase text-stone-400 mb-1.5"
+                >
+                  Daily Units
+                </label>
+                <input
+                  type="number"
+                  id="form-daily"
+                  required
+                  min="0"
+                  step="any"
+                  class="w-full px-3 py-3 border border-stone-200 rounded-lg text-base font-mono text-stone-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent placeholder:text-stone-300"
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label
+                  for="form-stock"
+                  class="block font-mono text-[11px] tracking-widest uppercase text-stone-400 mb-1.5"
+                >
+                  In Stock
+                </label>
+                <input
+                  type="number"
+                  id="form-stock"
+                  required
+                  min="0"
+                  step="any"
+                  class="w-full px-3 py-3 border border-stone-200 rounded-lg text-base font-mono text-stone-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent placeholder:text-stone-300"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          </form>
+          <div class="px-5 py-4 pb-8 sm:pb-4 bg-stone-50">
+            <button
+              id="btn-save"
+              type="button"
+              class="w-full py-3 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div
+        id="toast"
+        class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto bg-stone-800 text-white text-sm font-mono px-4 py-3 rounded-lg shadow-lg text-center translate-y-20 opacity-0 transition-all duration-300 z-50"
+      ></div>
+    </div>
+
+  </body>
+</html>
