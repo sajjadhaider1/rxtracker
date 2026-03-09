@@ -38,6 +38,7 @@ function setToken(token) {
 }
 let appData = null;
 let fileSha = null;
+let saving = false;
 async function fetchData() {
   const res = await fetch(API_URL, {
     headers: {
@@ -45,10 +46,14 @@ async function fetchData() {
       Accept: "application/vnd.github.v3+json"
     }
   });
-  if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
+  if (!res.ok) {
+    const err = new Error(`GitHub GET failed: ${res.status}`);
+    err.status = res.status;
+    throw err;
+  }
   const json = await res.json();
   fileSha = json.sha;
-  const decoded = atob(json.content);
+  const decoded = decodeURIComponent(escape(atob(json.content)));
   return JSON.parse(decoded);
 }
 async function saveData(data) {
@@ -77,6 +82,24 @@ async function saveData(data) {
   const json = await res.json();
   fileSha = json.content.sha;
 }
+async function persist(successMsg) {
+  if (saving) {
+    showToast("Save in progress…");
+    return;
+  }
+  saving = true;
+  appData.date_updated = getToday();
+  render();
+  try {
+    await saveData(appData);
+    showToast(successMsg);
+  } catch (e) {
+    showToast("Save failed — " + e.message);
+    console.error(e);
+  } finally {
+    saving = false;
+  }
+}
 function getToday() {
   const d = /* @__PURE__ */ new Date();
   const year = d.getFullYear();
@@ -95,10 +118,7 @@ function applyDayElapsed(data) {
   if (daysPassed <= 0) return false;
   for (const med of data.medicines) {
     med.in_stock = Math.max(0, med.in_stock - med.daily_units * daysPassed);
-    med.units_to_order = Math.max(
-      0,
-      med.daily_units * data.days_to_stock - med.in_stock
-    );
+    recalcOrder(med, data.days_to_stock);
   }
   data.date_updated = today;
   return true;
@@ -130,16 +150,24 @@ const medicineForm = $("#medicine-form");
 const toast = $("#toast");
 const loadingOverlay = $("#loading-overlay");
 const appEl = $("#app");
+function show(el, display) {
+  el.classList.remove("hidden");
+  if (display) el.classList.add(display);
+}
+function hide(el, display) {
+  el.classList.add("hidden");
+  if (display) el.classList.remove(display);
+}
 function render() {
   dateDisplay.textContent = appData.date_updated;
   daysToStockDisplay.textContent = appData.days_to_stock;
   const meds = appData.medicines;
   if (meds.length === 0) {
     tableBody.innerHTML = "";
-    emptyState.classList.remove("hidden");
+    show(emptyState);
     return;
   }
-  emptyState.classList.add("hidden");
+  hide(emptyState);
   tableBody.innerHTML = meds.map((med) => {
     return `
       <tr class="border-t border-stone-100 active:bg-stone-50 group" data-id="${med.id}">
@@ -173,9 +201,7 @@ function render() {
   }).join("");
 }
 function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 let toastTimer;
 function showToast(msg) {
@@ -198,13 +224,11 @@ function openModal(med = null) {
     medicineForm.reset();
     formId.value = "";
   }
-  modalBackdrop.classList.remove("hidden");
-  modalBackdrop.classList.add("flex");
+  show(modalBackdrop, "flex");
   formName.focus();
 }
 function closeModal() {
-  modalBackdrop.classList.add("hidden");
-  modalBackdrop.classList.remove("flex");
+  hide(modalBackdrop, "flex");
 }
 async function handleSave() {
   if (!medicineForm.reportValidity()) return;
@@ -231,25 +255,15 @@ async function handleSave() {
     appData.medicines.push(newMed);
   }
   closeModal();
-  render();
-  try {
-    await saveData(appData);
-    render();
-    showToast(editId ? "Medicine updated" : "Medicine added");
-  } catch (e) {
-    showToast("Save failed — " + e.message);
-    console.error(e);
-  }
+  await persist(editId ? "Medicine updated" : "Medicine added");
 }
 function openRestockInput(row) {
-  document.querySelectorAll(".restock-inline").forEach((el) => {
-    el.classList.add("hidden");
-    el.classList.remove("inline-flex");
+  tableBody.querySelectorAll(".restock-inline").forEach((el) => {
+    hide(el, "inline-flex");
   });
   const inline = row.querySelector(".restock-inline");
   const input = row.querySelector(".restock-input");
-  inline.classList.remove("hidden");
-  inline.classList.add("inline-flex");
+  show(inline, "inline-flex");
   input.value = "";
   input.focus();
 }
@@ -266,46 +280,28 @@ async function submitRestock(row) {
   }
   med.in_stock += units;
   recalcOrder(med, appData.days_to_stock);
-  render();
-  try {
-    await saveData(appData);
-    render();
-    showToast(`Added ${units} units to ${med.medicine_name}`);
-  } catch (e) {
-    showToast("Save failed — " + e.message);
-    console.error(e);
-  }
+  await persist(`Added ${units} units to ${med.medicine_name}`);
 }
 async function handleDelete(id) {
   const med = appData.medicines.find((m) => m.id === id);
   if (!med) return;
   if (!confirm(`Delete "${med.medicine_name}"?`)) return;
   appData.medicines = appData.medicines.filter((m) => m.id !== id);
-  render();
-  try {
-    await saveData(appData);
-    render();
-    showToast("Medicine deleted");
-  } catch (e) {
-    showToast("Delete failed — " + e.message);
-    console.error(e);
-  }
+  await persist("Medicine deleted");
 }
 const dtsShow = $("#days-to-stock-show");
 const dtsEdit = $("#days-to-stock-edit");
 const dtsInput = $("#days-to-stock-input");
-$("#days-to-stock-show").addEventListener("click", () => {
-  dtsShow.classList.add("hidden");
-  dtsEdit.classList.remove("hidden");
-  dtsEdit.classList.add("inline-flex");
+dtsShow.addEventListener("click", () => {
+  hide(dtsShow);
+  show(dtsEdit, "inline-flex");
   dtsInput.value = appData.days_to_stock;
   dtsInput.focus();
   dtsInput.select();
 });
 function closeDtsEdit() {
-  dtsEdit.classList.add("hidden");
-  dtsEdit.classList.remove("inline-flex");
-  dtsShow.classList.remove("hidden");
+  hide(dtsEdit, "inline-flex");
+  show(dtsShow);
 }
 async function submitDtsEdit() {
   const val = parseInt(dtsInput.value, 10);
@@ -319,15 +315,7 @@ async function submitDtsEdit() {
     recalcOrder(med, val);
   }
   closeDtsEdit();
-  render();
-  try {
-    await saveData(appData);
-    render();
-    showToast(`Stock window set to ${val} days`);
-  } catch (e) {
-    showToast("Save failed — " + e.message);
-    console.error(e);
-  }
+  await persist(`Stock window set to ${val} days`);
 }
 $("#days-to-stock-confirm").addEventListener("click", submitDtsEdit);
 dtsInput.addEventListener("keydown", (e) => {
@@ -359,8 +347,7 @@ tableBody.addEventListener("keydown", (e) => {
   }
   if (e.key === "Escape" && e.target.classList.contains("restock-input")) {
     const inline = e.target.closest(".restock-inline");
-    inline.classList.add("hidden");
-    inline.classList.remove("inline-flex");
+    hide(inline, "inline-flex");
   }
 });
 tableBody.addEventListener("click", (e) => {
@@ -387,7 +374,7 @@ const tokenScreen = $("#token-screen");
 const tokenInput = $("#token-input");
 const tokenError = $("#token-error");
 async function startApp() {
-  loadingOverlay.classList.remove("hidden");
+  loadingOverlay.classList.remove("hidden", "opacity-0");
   try {
     appData = await fetchData();
     const updated = applyDayElapsed(appData);
@@ -398,27 +385,27 @@ async function startApp() {
     render();
   } catch (e) {
     console.error("Init failed:", e);
-    if (e.message.includes("401") || e.message.includes("403")) {
+    if (e.status === 401 || e.status === 403) {
       localStorage.removeItem("rxtracker_pat");
-      loadingOverlay.classList.add("hidden");
-      tokenScreen.classList.remove("hidden");
-      tokenError.classList.remove("hidden");
+      hide(loadingOverlay);
+      show(tokenScreen);
+      show(tokenError);
       tokenError.textContent = "Token expired or invalid. Enter a new one.";
       return;
     }
     showToast("Failed to load data — check console");
   } finally {
     loadingOverlay.classList.add("opacity-0");
-    setTimeout(() => loadingOverlay.classList.add("hidden"), 300);
+    setTimeout(() => hide(loadingOverlay), 300);
     appEl.classList.remove("opacity-0");
   }
 }
 $("#token-submit").addEventListener("click", async () => {
   const token = tokenInput.value.trim();
   if (!token) return;
-  tokenError.classList.add("hidden");
+  hide(tokenError);
   setToken(token);
-  tokenScreen.classList.add("hidden");
+  hide(tokenScreen);
   await startApp();
 });
 tokenInput.addEventListener("keydown", (e) => {
@@ -427,5 +414,5 @@ tokenInput.addEventListener("keydown", (e) => {
 if (getToken()) {
   startApp();
 } else {
-  tokenScreen.classList.remove("hidden");
+  show(tokenScreen);
 }
