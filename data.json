@@ -8,6 +8,13 @@
       "daily_units": 1,
       "in_stock": 7,
       "units_to_order": 7
+    },
+    {
+      "id": "MED-002",
+      "medicine_name": "Proto",
+      "daily_units": 2,
+      "in_stock": 11,
+      "units_to_order": 17
     }
   ]
 }
