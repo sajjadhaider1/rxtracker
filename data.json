@@ -1,5 +1,13 @@
 {
   "date_updated": "2026-03-10",
   "days_to_stock": 14,
-  "medicines": []
+  "medicines": [
+    {
+      "id": "MED-001",
+      "medicine_name": "gabi",
+      "daily_units": 1,
+      "in_stock": 2,
+      "units_to_order": 12
+    }
+  ]
 }
