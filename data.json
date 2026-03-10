@@ -6,8 +6,8 @@
       "id": "MED-001",
       "medicine_name": "gabi",
       "daily_units": 1,
-      "in_stock": 2,
-      "units_to_order": 12
+      "in_stock": 4,
+      "units_to_order": 10
     }
   ]
 }
