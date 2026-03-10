@@ -29,7 +29,7 @@
 })();
 const REPO = "sajjadhaider1/rxtracker";
 const FILE_PATH = "data.json";
-const BRANCH = "gh-pages";
+const BRANCH = "data";
 const API_URL = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
 function getToken() {
   return localStorage.getItem("rxtracker_pat") || "";
