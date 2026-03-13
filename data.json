@@ -1,20 +1,20 @@
 {
-  "date_updated": "2026-03-10",
+  "date_updated": "2026-03-13",
   "days_to_stock": 14,
   "medicines": [
     {
       "id": "MED-001",
       "medicine_name": "Gabica 75mg",
       "daily_units": 1,
-      "in_stock": 10,
-      "units_to_order": 4
+      "in_stock": 7,
+      "units_to_order": 7
     },
     {
       "id": "MED-002",
       "medicine_name": "Proto",
       "daily_units": 2,
-      "in_stock": 11,
-      "units_to_order": 17
+      "in_stock": 5,
+      "units_to_order": 23
     }
   ]
 }
