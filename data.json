@@ -1,76 +1,76 @@
 {
-  "date_updated": "2026-03-13",
+  "date_updated": "2026-03-16",
   "days_to_stock": 14,
   "medicines": [
     {
       "id": "MED-001",
       "medicine_name": "Ganaton OD 150mg",
       "daily_units": 1,
-      "in_stock": 3,
-      "units_to_order": 11
+      "in_stock": 0,
+      "units_to_order": 14
     },
     {
       "id": "MED-002",
       "medicine_name": "Seradep 5mg",
       "daily_units": 1,
-      "in_stock": 1,
-      "units_to_order": 13
+      "in_stock": 0,
+      "units_to_order": 14
     },
     {
       "id": "MED-003",
       "medicine_name": "Nebil 5mg",
       "daily_units": 1,
-      "in_stock": 4,
-      "units_to_order": 10
+      "in_stock": 1,
+      "units_to_order": 13
     },
     {
       "id": "MED-004",
       "medicine_name": "Norvasc 10mg",
       "daily_units": 1,
-      "in_stock": 24,
+      "in_stock": 21,
       "units_to_order": 0
     },
     {
       "id": "MED-005",
       "medicine_name": "Gouric 40mg",
       "daily_units": 1,
-      "in_stock": 11,
-      "units_to_order": 3
+      "in_stock": 8,
+      "units_to_order": 6
     },
     {
       "id": "MED-006",
       "medicine_name": "Gabica 75mg",
       "daily_units": 1,
-      "in_stock": 9,
-      "units_to_order": 5
+      "in_stock": 6,
+      "units_to_order": 8
     },
     {
       "id": "MED-007",
       "medicine_name": "Anplag 60mg",
       "daily_units": 2,
-      "in_stock": 4,
-      "units_to_order": 24
+      "in_stock": 0,
+      "units_to_order": 28
     },
     {
       "id": "MED-008",
       "medicine_name": "Rolip-Eze 20/10mg",
       "daily_units": 1,
-      "in_stock": 7,
-      "units_to_order": 7
+      "in_stock": 4,
+      "units_to_order": 10
     },
     {
       "id": "MED-009",
       "medicine_name": "Diovan 80mg",
       "daily_units": 1,
-      "in_stock": 23,
+      "in_stock": 20,
       "units_to_order": 0
     },
     {
       "id": "MED-010",
       "medicine_name": "Fexet 120mg",
       "daily_units": 1,
-      "in_stock": 6,
-      "units_to_order": 8
+      "in_stock": 3,
+      "units_to_order": 11
     }
   ]
 }
