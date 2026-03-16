@@ -41,8 +41,8 @@
       "id": "MED-006",
       "medicine_name": "Gabica 75mg",
       "daily_units": 1,
-      "in_stock": 6,
-      "units_to_order": 8
+      "in_stock": 21,
+      "units_to_order": 0
     },
     {
       "id": "MED-007",
