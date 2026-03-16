@@ -34,8 +34,8 @@
       "id": "MED-005",
       "medicine_name": "Gouric 40mg",
       "daily_units": 1,
-      "in_stock": 8,
-      "units_to_order": 6
+      "in_stock": 29,
+      "units_to_order": 0
     },
     {
       "id": "MED-006",
