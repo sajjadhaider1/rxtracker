@@ -13,8 +13,8 @@
       "id": "MED-002",
       "medicine_name": "Seradep 5mg",
       "daily_units": 1,
-      "in_stock": 2,
-      "units_to_order": 12
+      "in_stock": 16,
+      "units_to_order": 0
     },
     {
       "id": "MED-003",
