@@ -1,6 +1,6 @@
 {
   "date_updated": "2026-03-27",
-  "days_to_stock": 3,
+  "days_to_stock": 7,
   "medicines": [
     {
       "id": "MED-001",
@@ -49,7 +49,7 @@
       "medicine_name": "Anplag 60mg",
       "daily_units": 2,
       "in_stock": 6,
-      "units_to_order": 0
+      "units_to_order": 8
     },
     {
       "id": "MED-008",
