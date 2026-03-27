@@ -48,8 +48,8 @@
       "id": "MED-007",
       "medicine_name": "Anplag 60mg",
       "daily_units": 2,
-      "in_stock": 6,
-      "units_to_order": 14
+      "in_stock": 20,
+      "units_to_order": 0
     },
     {
       "id": "MED-008",
