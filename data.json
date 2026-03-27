@@ -20,8 +20,8 @@
       "id": "MED-003",
       "medicine_name": "Nebil 5mg",
       "daily_units": 1,
-      "in_stock": 5,
-      "units_to_order": 9
+      "in_stock": 19,
+      "units_to_order": 0
     },
     {
       "id": "MED-004",
