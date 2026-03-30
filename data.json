@@ -1,13 +1,13 @@
 {
   "date_updated": "2026-03-30",
-  "days_to_stock": 10,
+  "days_to_stock": 7,
   "medicines": [
     {
       "id": "MED-001",
       "medicine_name": "Ganaton OD 150mg",
       "daily_units": 1,
       "in_stock": 7,
-      "units_to_order": 3
+      "units_to_order": 0
     },
     {
       "id": "MED-002",
@@ -28,7 +28,7 @@
       "medicine_name": "Norvasc 10mg",
       "daily_units": 1,
       "in_stock": 8,
-      "units_to_order": 2
+      "units_to_order": 0
     },
     {
       "id": "MED-005",
@@ -42,14 +42,14 @@
       "medicine_name": "Gabica 75mg",
       "daily_units": 1,
       "in_stock": 7,
-      "units_to_order": 3
+      "units_to_order": 0
     },
     {
       "id": "MED-007",
       "medicine_name": "Anplag 60mg",
       "daily_units": 2,
       "in_stock": 14,
-      "units_to_order": 6
+      "units_to_order": 0
     },
     {
       "id": "MED-008",
@@ -63,7 +63,7 @@
       "medicine_name": "Diovan 80mg",
       "daily_units": 1,
       "in_stock": 7,
-      "units_to_order": 3
+      "units_to_order": 0
     },
     {
       "id": "MED-010",
