@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Loan Calculator — PKR</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #13161d;
+    --surface2: #1c2030;
+    --border: #252a38;
+    --accent: #4fffb0;
+    --accent2: #00c8ff;
+    --accent3: #ff6b6b;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --card-bg: #161b27;
+    --radius: 14px;
+    --track: #1e2433;
+    --thumb: #4fffb0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #131928 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 18px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .logo-mark svg { width: 18px; height: 18px; }
+
+  .header h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .header h1 span { color: var(--accent); }
+
+  /* Tab bar */
+  .tabs {
+    display: flex;
+    gap: 6px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .tab.active {
+    background: var(--accent);
+    color: #0a0c10;
+    border-color: var(--accent);
+  }
+
+  /* Main */
+  .main { padding: 16px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Field groups */
+  .field-group {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .field-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+
+  .field-label span {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+  }
+
+  .field-label .field-hint {
+    font-size: 10px;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .num-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  .num-input::-webkit-outer-spin-button,
+  .num-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .num-input:focus { border-color: var(--accent); }
+
+  .unit-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Down payment toggle */
+  .dp-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .toggle-btn.active {
+    background: var(--surface2);
+    color: var(--accent2);
+    border-color: var(--accent2);
+  }
+
+  /* Range slider */
+  .slider-wrap { position: relative; padding: 4px 0 2px; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--track);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--thumb);
+    border-radius: 50%;
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--thumb);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  input[type=range]:active::-webkit-slider-thumb { transform: scale(1.2); }
+
+  input[type=range]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--thumb);
+    border-radius: 50%;
+    border: 3px solid var(--bg);
+    cursor: pointer;
+  }
+
+  /* Progress fill on slider */
+  input[type=range].filled {
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct, 0%), var(--track) var(--pct, 0%), var(--track) 100%);
+  }
+
+  /* Summary card */
+  .summary-card {
+    background: linear-gradient(135deg, #111827 0%, #1a2035 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .summary-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .summary-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 16px;
+  }
+
+  .summary-emi {
+    font-size: 32px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -1px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .summary-emi-label {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .summary-period {
+    text-align: right;
+  }
+
+  .summary-period .val {
+    font-size: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .summary-period .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .summary-item { }
+
+  .summary-item .s-val {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .summary-item .s-lbl {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Breakdown bar */
+  .breakdown-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--track);
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .breakdown-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+  }
+
+  .breakdown-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .breakdown-labels .principal { color: var(--accent); }
+  .breakdown-labels .interest { color: var(--accent2); }
+
+  /* Amortization table */
+  .amort-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .amort-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .amort-header h3 {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+  }
+
+  .amort-toggle {
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    background: transparent;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .amort-table-wrap {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .amort-table-wrap.open { max-height: 600px; overflow-y: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  thead th {
+    padding: 8px 10px;
+    text-align: right;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+  }
+
+  thead th:first-child { text-align: left; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.1s;
+  }
+
+  tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+  tbody td {
+    padding: 7px 10px;
+    text-align: right;
+    color: var(--text);
+    font-size: 11px;
+  }
+
+  tbody td:first-child {
+    text-align: left;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  tbody td.interest-col { color: var(--accent2); }
+  tbody td.principal-col { color: var(--accent); }
+
+  /* Year summary rows */
+  .year-row { background: rgba(79, 255, 176, 0.04) !important; }
+  .year-row td { font-weight: 500; }
+
+  .view-mode-btns {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .view-btn {
+    flex: 1;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .view-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--muted);
+  }
+
+  /* Scrollbar styling */
+  .amort-table-wrap::-webkit-scrollbar { width: 4px; }
+  .amort-table-wrap::-webkit-scrollbar-track { background: var(--surface); }
+  .amort-table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  @media (max-width: 380px) {
+    .summary-emi { font-size: 26px; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0a0c10" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h1>Loan<span>Calc</span> <span style="color:var(--muted);font-size:13px;font-weight:600">PKR</span></h1>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('home')">🏠 Home</button>
+    <button class="tab" onclick="switchTab('car')">🚗 Car</button>
+    <button class="tab" onclick="switchTab('amort')">📊 Schedule</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- HOME LOAN -->
+  <div id="section-home" class="section active">
+    <div id="inputs-home"></div>
+    <div id="summary-home"></div>
+  </div>
+
+  <!-- CAR LOAN -->
+  <div id="section-car" class="section">
+    <div id="inputs-car"></div>
+    <div id="summary-car"></div>
+  </div>
+
+  <!-- AMORTIZATION -->
+  <div id="section-amort" class="section">
+    <div class="view-mode-btns">
+      <button class="view-btn active" id="btn-monthly" onclick="setAmortView('monthly')">Monthly</button>
+      <button class="view-btn" id="btn-yearly" onclick="setAmortView('yearly')">Yearly</button>
+    </div>
+    <div id="amort-source-info" style="font-size:11px;color:var(--muted);margin-bottom:12px;padding:0 2px;"></div>
+    <div class="amort-section">
+      <div class="amort-header">
+        <h3 id="amort-title">Amortization Schedule</h3>
+        <button class="amort-toggle" id="amort-toggle-btn" onclick="toggleAmortTable()">Show</button>
+      </div>
+      <div class="amort-table-wrap" id="amort-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>EMI</th>
+              <th>Principal</th>
+              <th>Interest</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="amort-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+const state = {
+  home: { amount: 10000000, dp: 20, dpMode: 'pct', rate: 14, years: 20, emi: 0 },
+  car:  { amount: 3000000,  dp: 20, dpMode: 'pct', rate: 16, years: 5,  emi: 0 }
+};
+
+let activeTab = 'home';
+let amortView = 'monthly';
+let amortTableOpen = false;
+
+// ─── Ranges ───────────────────────────────────────────────────────────────────
+const ranges = {
+  home: { amount: [500000, 100000000, 100000], dp: [0, 50, 0.5], rate: [5, 30, 0.1], years: [1, 30, 1], emi: [1000, 2000000, 1000] },
+  car:  { amount: [500000,  20000000, 50000],  dp: [0, 50, 0.5], rate: [5, 35, 0.1], years: [1, 10, 1], emi: [1000,  800000, 1000] }
+};
+
+// ─── Format helpers ───────────────────────────────────────────────────────────
+const fmt = n => {
+  if (n >= 1e7) return (n/1e7).toFixed(2).replace(/\.?0+$/,'') + ' Cr';
+  if (n >= 1e5) return (n/1e5).toFixed(2).replace(/\.?0+$/,'') + ' L';
+  return n.toLocaleString('en-PK');
+};
+
+const fmtFull = n => '₨ ' + Math.round(n).toLocaleString('en-PK');
+const fmtShort = n => {
+  if (n >= 1e7) return '₨ ' + (n/1e7).toFixed(2) + 'Cr';
+  if (n >= 1e5) return '₨ ' + (n/1e5).toFixed(1) + 'L';
+  return '₨ ' + Math.round(n).toLocaleString('en-PK');
+};
+
+// ─── Core calculations ────────────────────────────────────────────────────────
+function calcEMI(principal, annualRate, years) {
+  const r = annualRate / 100 / 12;
+  const n = years * 12;
+  if (r === 0) return principal / n;
+  return principal * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+}
+
+function calcPrincipalFromEMI(emi, annualRate, years) {
+  const r = annualRate / 100 / 12;
+  const n = years * 12;
+  if (r === 0) return emi * n;
+  return emi * (Math.pow(1+r, n) - 1) / (r * Math.pow(1+r, n));
+}
+
+function getLoanAmount(t) {
+  const s = state[t];
+  const dpAmt = s.dpMode === 'pct' ? s.amount * s.dp / 100 : s.dp;
+  return Math.max(0, s.amount - dpAmt);
+}
+
+function getDPAmount(t) {
+  const s = state[t];
+  return s.dpMode === 'pct' ? s.amount * s.dp / 100 : s.dp;
+}
+
+function getDPPct(t) {
+  const s = state[t];
+  if (s.amount === 0) return 0;
+  return s.dpMode === 'pct' ? s.dp : (s.dp / s.amount * 100);
+}
+
+// ─── Recalculate EMI after amount/rate/years change ───────────────────────────
+function recalcEMI(t) {
+  const s = state[t];
+  const loan = getLoanAmount(t);
+  s.emi = calcEMI(loan, s.rate, s.years);
+}
+
+// ─── Build inputs HTML ────────────────────────────────────────────────────────
+function buildInputs(t) {
+  const container = document.getElementById('inputs-' + t);
+  container.innerHTML = `
+    ${makeField(t, 'amount', '₨', 'Total Price', 'PKR')}
+    ${makeDPField(t)}
+    ${makeField(t, 'rate', '%', 'Annual Interest Rate', '%')}
+    ${makeField(t, 'years', 'yr', 'Loan Period', 'YEARS')}
+    ${makeField(t, 'emi', '₨', 'Monthly Installment (EMI)', 'PKR/mo')}
+  `;
+  attachListeners(t);
+  updateAllSliders(t);
+}
+
+function makeField(t, key, icon, label, unit) {
+  const r = ranges[t][key];
+  return `
+  <div class="field-group">
+    <div class="field-label">
+      <span>${label}</span>
+      <span class="field-hint" id="hint-${t}-${key}"></span>
+    </div>
+    <div class="input-row">
+      <input class="num-input" type="number" id="inp-${t}-${key}"
+        min="${r[0]}" max="${r[1]}" step="${r[2]}"
+        onchange="onInputChange('${t}','${key}',this.value)"
+        oninput="onInputChange('${t}','${key}',this.value)">
+      <div class="unit-badge">${unit}</div>
+    </div>
+    <div class="slider-wrap">
+      <input type="range" class="filled" id="sld-${t}-${key}"
+        min="${r[0]}" max="${r[1]}" step="${r[2]}"
+        oninput="onSliderChange('${t}','${key}',this.value)">
+    </div>
+  </div>`;
+}
+
+function makeDPField(t) {
+  return `
+  <div class="field-group">
+    <div class="field-label">
+      <span>Down Payment</span>
+      <span class="field-hint" id="hint-${t}-dp"></span>
+    </div>
+    <div class="dp-toggle">
+      <button class="toggle-btn active" id="dpbtn-${t}-pct" onclick="setDPMode('${t}','pct')">% Percent</button>
+      <button class="toggle-btn" id="dpbtn-${t}-pkr" onclick="setDPMode('${t}','pkr')">₨ Amount</button>
+    </div>
+    <div class="input-row">
+      <input class="num-input" type="number" id="inp-${t}-dp"
+        oninput="onInputChange('${t}','dp',this.value)"
+        onchange="onInputChange('${t}','dp',this.value)">
+      <div class="unit-badge" id="dpunit-${t}">%</div>
+    </div>
+    <div class="slider-wrap">
+      <input type="range" class="filled" id="sld-${t}-dp"
+        oninput="onSliderChange('${t}','dp',this.value)">
+    </div>
+  </div>`;
+}
+
+// ─── Listeners ────────────────────────────────────────────────────────────────
+function attachListeners(t) { /* done via inline handlers */ }
+
+let updating = false;
+
+function onInputChange(t, key, val) {
+  if (updating) return;
+  val = parseFloat(val);
+  if (isNaN(val)) return;
+  applyChange(t, key, val, 'input');
+}
+
+function onSliderChange(t, key, val) {
+  if (updating) return;
+  val = parseFloat(val);
+  applyChange(t, key, val, 'slider');
+}
+
+function applyChange(t, key, val, src) {
+  updating = true;
+  const s = state[t];
+
+  if (key === 'amount') {
+    s.amount = val;
+    recalcEMI(t);
+  } else if (key === 'dp') {
+    s.dp = val;
+    recalcEMI(t);
+  } else if (key === 'rate') {
+    s.rate = val;
+    recalcEMI(t);
+  } else if (key === 'years') {
+    s.years = val;
+    recalcEMI(t);
+  } else if (key === 'emi') {
+    s.emi = val;
+    // back-calculate principal (total amount keeping DP fixed)
+    const dp = getDPAmount(t);
+    const loan = calcPrincipalFromEMI(val, s.rate, s.years);
+    s.amount = loan + dp;
+  }
+
+  updateAllSliders(t);
+  renderSummary(t);
+  if (t === activeTab) renderAmortTable();
+  updating = false;
+}
+
+function setDPMode(t, mode) {
+  const s = state[t];
+  // Convert current dp to new mode
+  if (mode === 'pct' && s.dpMode === 'pkr') {
+    s.dp = s.amount > 0 ? Math.min(50, s.dp / s.amount * 100) : 0;
+  } else if (mode === 'pkr' && s.dpMode === 'pct') {
+    s.dp = s.amount * s.dp / 100;
+  }
+  s.dpMode = mode;
+  document.getElementById('dpbtn-'+t+'-pct').classList.toggle('active', mode === 'pct');
+  document.getElementById('dpbtn-'+t+'-pkr').classList.toggle('active', mode === 'pkr');
+  document.getElementById('dpunit-'+t).textContent = mode === 'pct' ? '%' : 'PKR';
+
+  // Update DP slider range
+  updateDPSliderRange(t);
+  updateAllSliders(t);
+  recalcEMI(t);
+  renderSummary(t);
+  if (t === activeTab) renderAmortTable();
+}
+
+function updateDPSliderRange(t) {
+  const s = state[t];
+  const sld = document.getElementById('sld-'+t+'-dp');
+  const inp = document.getElementById('inp-'+t+'-dp');
+  if (!sld) return;
+  if (s.dpMode === 'pct') {
+    sld.min = 0; sld.max = 50; sld.step = 0.5;
+    inp.min = 0; inp.max = 50; inp.step = 0.5;
+  } else {
+    const max = s.amount * 0.6;
+    sld.min = 0; sld.max = max; sld.step = Math.max(10000, Math.round(max/100/10000)*10000);
+    inp.min = 0; inp.max = max; inp.step = 10000;
+  }
+}
+
+// ─── Sync inputs/sliders ──────────────────────────────────────────────────────
+function updateAllSliders(t) {
+  const s = state[t];
+  updateDPSliderRange(t);
+
+  const fields = ['amount','dp','rate','years','emi'];
+  fields.forEach(key => {
+    const val = key === 'emi' ? s.emi : key === 'dp' ? s.dp : s[key];
+    setFieldVal(t, key, val);
+  });
+
+  // hints
+  document.getElementById('hint-'+t+'-amount').textContent = fmtShort(s.amount);
+  document.getElementById('hint-'+t+'-dp').textContent =
+    s.dpMode === 'pct'
+      ? fmtShort(getDPAmount(t))
+      : (getDPPct(t).toFixed(1) + '%');
+  document.getElementById('hint-'+t+'-rate').textContent = s.rate.toFixed(1) + '%';
+  document.getElementById('hint-'+t+'-years').textContent = s.years + (s.years === 1 ? ' yr' : ' yrs');
+  document.getElementById('hint-'+t+'-emi').textContent = fmtShort(s.emi);
+}
+
+function setFieldVal(t, key, val) {
+  const inp = document.getElementById('inp-'+t+'-key'.replace('key',key));
+  const sld = document.getElementById('sld-'+t+'-key'.replace('key',key));
+  // fix ids
+  const inpEl = document.getElementById('inp-'+t+'-'+key);
+  const sldEl = document.getElementById('sld-'+t+'-'+key);
+  if (!inpEl || !sldEl) return;
+
+  const rounded = key === 'rate' ? +val.toFixed(1)
+                : key === 'emi'  ? Math.round(val)
+                : key === 'dp' && state[t].dpMode === 'pct' ? +parseFloat(val).toFixed(1)
+                : Math.round(val);
+
+  inpEl.value = rounded;
+  sldEl.value = rounded;
+
+  // fill pct
+  const min = parseFloat(sldEl.min);
+  const max = parseFloat(sldEl.max);
+  const pct = max > min ? ((rounded - min) / (max - min) * 100) : 0;
+  sldEl.style.setProperty('--pct', pct.toFixed(1) + '%');
+}
+
+// ─── Summary card ─────────────────────────────────────────────────────────────
+function renderSummary(t) {
+  const s = state[t];
+  const loan = getLoanAmount(t);
+  const emi = s.emi;
+  const totalPay = emi * s.years * 12;
+  const totalInt = totalPay - loan;
+  const principalPct = loan > 0 ? (loan / totalPay * 100) : 0;
+  const dpAmt = getDPAmount(t);
+
+  const el = document.getElementById('summary-'+t);
+  el.innerHTML = `
+  <div class="summary-card">
+    <div class="summary-title">Loan Summary</div>
+    <div class="summary-main">
+      <div>
+        <div class="summary-emi">${fmtShort(emi)}</div>
+        <div class="summary-emi-label">Monthly EMI</div>
+      </div>
+      <div class="summary-period">
+        <div class="val">${s.years * 12}</div>
+        <div class="lbl">Total Months</div>
+      </div>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="s-val">${fmtShort(s.amount)}</div>
+        <div class="s-lbl">Property</div>
+      </div>
+      <div class="summary-item">
+        <div class="s-val">${fmtShort(dpAmt)}</div>
+        <div class="s-lbl">Down Pay</div>
+      </div>
+      <div class="summary-item">
+        <div class="s-val">${fmtShort(loan)}</div>
+        <div class="s-lbl">Loan</div>
+      </div>
+      <div class="summary-item">
+        <div class="s-val">${fmtShort(totalInt)}</div>
+        <div class="s-lbl">Interest</div>
+      </div>
+      <div class="summary-item">
+        <div class="s-val">${fmtShort(totalPay + dpAmt)}</div>
+        <div class="s-lbl">Total Cost</div>
+      </div>
+      <div class="summary-item">
+        <div class="s-val">${s.rate.toFixed(1)}%</div>
+        <div class="s-lbl">Rate p.a.</div>
+      </div>
+    </div>
+    <div class="breakdown-bar">
+      <div class="breakdown-fill" style="width:${principalPct.toFixed(1)}%"></div>
+    </div>
+    <div class="breakdown-labels">
+      <span class="principal">Principal ${principalPct.toFixed(0)}%</span>
+      <span class="interest">Interest ${(100-principalPct).toFixed(0)}%</span>
+    </div>
+  </div>`;
+}
+
+// ─── Amortization ─────────────────────────────────────────────────────────────
+function renderAmortTable() {
+  const t = activeTab === 'amort' ? 'home' : activeTab;
+  // determine which loan to use based on context (we'll use activeTab before switching)
+  renderAmortFor(lastLoanTab);
+}
+
+let lastLoanTab = 'home';
+
+function renderAmortFor(t) {
+  const s = state[t];
+  const loan = getLoanAmount(t);
+  const emi = s.emi;
+  const r = s.rate / 100 / 12;
+  const n = s.years * 12;
+
+  document.getElementById('amort-source-info').textContent =
+    `Showing schedule for ${t === 'home' ? 'Home' : 'Car'} Loan — ${fmtShort(loan)} @ ${s.rate}% for ${s.years} yrs`;
+
+  const tbody = document.getElementById('amort-body');
+  tbody.innerHTML = '';
+
+  if (amortView === 'monthly') {
+    let bal = loan;
+    for (let i = 1; i <= n; i++) {
+      const int = bal * r;
+      const prin = emi - int;
+      bal = Math.max(0, bal - prin);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>Mo ${i}</td>
+        <td>${fmtShort(emi)}</td>
+        <td class="principal-col">${fmtShort(prin)}</td>
+        <td class="interest-col">${fmtShort(int)}</td>
+        <td>${fmtShort(bal)}</td>`;
+      tbody.appendChild(tr);
+    }
+  } else {
+    // yearly
+    let bal = loan;
+    for (let y = 1; y <= s.years; y++) {
+      let yPrin = 0, yInt = 0;
+      for (let m = 0; m < 12; m++) {
+        const int = bal * r;
+        const prin = emi - int;
+        yPrin += prin;
+        yInt += int;
+        bal = Math.max(0, bal - prin);
+      }
+      const tr = document.createElement('tr');
+      tr.classList.add('year-row');
+      tr.innerHTML = `
+        <td>Year ${y}</td>
+        <td>${fmtShort(emi * 12)}</td>
+        <td class="principal-col">${fmtShort(yPrin)}</td>
+        <td class="interest-col">${fmtShort(yInt)}</td>
+        <td>${fmtShort(bal)}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Update amort title
+  document.getElementById('amort-title').textContent =
+    `${amortView === 'monthly' ? 'Monthly' : 'Yearly'} Schedule (${n} payments)`;
+}
+
+function toggleAmortTable() {
+  amortTableOpen = !amortTableOpen;
+  document.getElementById('amort-table-wrap').classList.toggle('open', amortTableOpen);
+  document.getElementById('amort-toggle-btn').textContent = amortTableOpen ? 'Hide' : 'Show';
+}
+
+function setAmortView(v) {
+  amortView = v;
+  document.getElementById('btn-monthly').classList.toggle('active', v === 'monthly');
+  document.getElementById('btn-yearly').classList.toggle('active', v === 'yearly');
+  renderAmortFor(lastLoanTab);
+}
+
+// ─── Tab switching ────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  if (tab !== 'amort') lastLoanTab = tab;
+
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-'+tab).classList.add('active');
+  document.querySelectorAll('.tab')[['home','car','amort'].indexOf(tab)].classList.add('active');
+
+  if (tab === 'amort') renderAmortFor(lastLoanTab);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+function init() {
+  ['home','car'].forEach(t => {
+    recalcEMI(t);
+    buildInputs(t);
+    renderSummary(t);
+  });
+  renderAmortFor('home');
+}
+
+init();
+</script>
+</body>
+</html>
