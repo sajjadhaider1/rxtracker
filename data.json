@@ -13,8 +13,8 @@
       "id": "MED-004",
       "medicine_name": "Norvasc 10mg",
       "daily_units": 1,
-      "in_stock": 0,
-      "units_to_order": 14
+      "in_stock": 26,
+      "units_to_order": 0
     },
     {
       "id": "MED-005",
