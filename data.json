@@ -36,6 +36,13 @@
       "daily_units": 1,
       "in_stock": 22,
       "units_to_order": 0
+    },
+    {
+      "id": "MED-019",
+      "medicine_name": "Diovan 160mg",
+      "daily_units": 2,
+      "in_stock": 56,
+      "units_to_order": 0
     }
   ]
 }
