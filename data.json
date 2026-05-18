@@ -10,13 +10,6 @@
       "units_to_order": 0
     },
     {
-      "id": "MED-004",
-      "medicine_name": "Norvasc 10mg",
-      "daily_units": 1,
-      "in_stock": 19,
-      "units_to_order": 0
-    },
-    {
       "id": "MED-005",
       "medicine_name": "Gouric 40mg",
       "daily_units": 1,
