@@ -24,13 +24,6 @@
       "units_to_order": 0
     },
     {
-      "id": "MED-014",
-      "medicine_name": "Fexet 120mg",
-      "daily_units": 0,
-      "in_stock": 20,
-      "units_to_order": 0
-    },
-    {
       "id": "MED-015",
       "medicine_name": "Rolip-Eze 20/10mg",
       "daily_units": 1,
