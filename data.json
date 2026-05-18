@@ -43,13 +43,6 @@
       "daily_units": 0,
       "in_stock": 20,
       "units_to_order": 0
-    },
-    {
-      "id": "MED-015",
-      "medicine_name": "Diovan 80mg",
-      "daily_units": 4,
-      "in_stock": 14,
-      "units_to_order": 14
     }
   ]
 }
