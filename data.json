@@ -50,6 +50,13 @@
       "daily_units": 1,
       "in_stock": 0,
       "units_to_order": 7
+    },
+    {
+      "id": "MED-014",
+      "medicine_name": "Fexet 120mg",
+      "daily_units": 1,
+      "in_stock": 0,
+      "units_to_order": 7
     }
   ]
 }
