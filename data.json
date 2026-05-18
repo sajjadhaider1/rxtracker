@@ -36,6 +36,13 @@
       "daily_units": 2,
       "in_stock": 56,
       "units_to_order": 0
+    },
+    {
+      "id": "MED-017",
+      "medicine_name": "Anplag 60mg",
+      "daily_units": 2,
+      "in_stock": 1,
+      "units_to_order": 13
     }
   ]
 }
