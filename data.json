@@ -10,13 +10,6 @@
       "units_to_order": 0
     },
     {
-      "id": "MED-007",
-      "medicine_name": "Anplag 60mg",
-      "daily_units": 2,
-      "in_stock": 28,
-      "units_to_order": 0
-    },
-    {
       "id": "MED-012",
       "medicine_name": "Gouric 40mg",
       "daily_units": 1,
