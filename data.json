@@ -1,6 +1,6 @@
 {
   "date_updated": "2026-06-01",
-  "days_to_stock": 7,
+  "days_to_stock": 3,
   "medicines": [
     {
       "id": "MED-003",
@@ -21,7 +21,7 @@
       "medicine_name": "Anplag 60mg",
       "daily_units": 2,
       "in_stock": 0,
-      "units_to_order": 14
+      "units_to_order": 6
     },
     {
       "id": "MED-018",
@@ -35,7 +35,7 @@
       "medicine_name": "Diovan 160mg",
       "daily_units": 2,
       "in_stock": 7,
-      "units_to_order": 7
+      "units_to_order": 0
     },
     {
       "id": "MED-020",
